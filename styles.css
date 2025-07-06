@@ -45,6 +45,10 @@ body {
     align-items: center;
 }
 
+h1 {
+    font-size: 36px;
+}
+
 .list {
     margin-top: 16px;
     margin-bottom: 16px;
@@ -81,17 +85,12 @@ h2 {
     width: 85%;
 }
 
-.list .plus {
-    cursor: pointer;
-}
-
 .list.active .plus {
     display: none;
 }
 
 .list .minus {
     display: none;
-    cursor: pointer;
 }
 
 .list.active .minus {
