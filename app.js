@@ -1,72 +1,55 @@
-const allLists = document.querySelectorAll('.list');
+const lists = document.querySelectorAll(".list");
 
-function openList(list) {
-  allLists.forEach((el) => {
-    const answer = el.querySelector('.answer');
-    const plusIcon = el.querySelector('.plus');
-    const minusIcon = el.querySelector('.minus');
+lists.forEach((list) => {
+    const question = list.querySelector(".question");
+    question.setAttribute("tabindex", "0");
 
-    if (el === list) {
-      el.classList.add('active');
-      answer.style.display = 'block';
-      plusIcon.style.display = 'none';
-      minusIcon.style.display = 'block';
-    } else {
-      el.classList.remove('active');
-      answer.style.display = 'none';
-      plusIcon.style.display = 'block';
-      minusIcon.style.display = 'none';
-    }
-  });
-}
+    const viewhide = list.querySelector(".viewhide");
+    viewhide.addEventListener("click", () => {
+        const isActive = list.classList.contains("active");
 
-function closeList(list) {
-  const answer = list.querySelector('.answer');
-  const plusIcon = list.querySelector('.plus');
-  const minusIcon = list.querySelector('.minus');
+        // Tutup semua
+        lists.forEach((l) => l.classList.remove("active"));
 
-  list.classList.remove('active');
-  answer.style.display = 'none';
-  plusIcon.style.display = 'block';
-  minusIcon.style.display = 'none';
-}
+        // Kalau sebelumnya gak aktif, buka yang ini
+        if (!isActive) {
+            list.classList.add("active");
+        }
+    });
 
-allLists.forEach((list, i) => {
-  const question = list.querySelector('.question');
-  question.setAttribute('tabindex', '0');
+    question.addEventListener("focus", () => {
+        lists.forEach((l) => l.classList.remove("active"));
+        list.classList.add("active");
+    });
 
-  question.addEventListener('click', () => {
-    const isActive = list.classList.contains('active');
-    if (!isActive) {
-      openList(list);
-    } else {
-      closeList(list);
-    }
-  });
+    question.addEventListener("keydown", (e) => {
+        const index = [...lists].indexOf(list);
 
-  question.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const next = allLists[i + 1];
-      if (next) next.querySelector('.question').focus();
-    }
-
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const prev = allLists[i - 1];
-      if (prev) prev.querySelector('.question').focus();
-    }
-
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      openList(list);
-    }
-
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      closeList(list);
-    }
-  });
+        switch (e.key) {
+            case "ArrowDown":
+                e.preventDefault();
+                if (index < lists.length - 1) {
+                    const next = lists[index + 1].querySelector(".question");
+                    next.focus();
+                }
+                break;
+            case "ArrowUp":
+                e.preventDefault();
+                if (index > 0) {
+                    const prev = lists[index - 1].querySelector(".question");
+                    prev.focus();
+                }
+                break;
+            case "ArrowLeft":
+                e.preventDefault();
+                lists[0].querySelector(".question").focus();
+                break;
+            case "ArrowRight":
+                e.preventDefault();
+                lists[lists.length - 1].querySelector(".question").focus();
+                break;
+        }
+    });
 });
 
-openList(allLists[0]);
+lists[0].classList.add("active");
