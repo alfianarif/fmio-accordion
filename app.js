@@ -1,54 +1,72 @@
-const lists = document.querySelectorAll(".list");
+const allLists = document.querySelectorAll('.list');
 
-// Buka pertanyaan pertama saat halaman dibuka
-if (lists.length > 0) {
-    lists[0].classList.add("active");
-    lists[0].querySelector("p").style.display = "block";
-    lists[0].querySelector(".plus").style.display = "none";
-    lists[0].querySelector(".minus").style.display = "block";
+function openList(list) {
+  allLists.forEach((el) => {
+    const answer = el.querySelector('.answer');
+    const plusIcon = el.querySelector('.plus');
+    const minusIcon = el.querySelector('.minus');
+
+    if (el === list) {
+      el.classList.add('active');
+      answer.style.display = 'block';
+      plusIcon.style.display = 'none';
+      minusIcon.style.display = 'block';
+    } else {
+      el.classList.remove('active');
+      answer.style.display = 'none';
+      plusIcon.style.display = 'block';
+      minusIcon.style.display = 'none';
+    }
+  });
 }
 
-lists.forEach((list, index) => {
-    const toggleButton = list.querySelector(".viewhide");
-    const answer = list.querySelector("p");
-    const plusIcon = list.querySelector(".plus");
-    const minusIcon = list.querySelector(".minus");
+function closeList(list) {
+  const answer = list.querySelector('.answer');
+  const plusIcon = list.querySelector('.plus');
+  const minusIcon = list.querySelector('.minus');
 
-    const toggle = () => {
-        const isActive = list.classList.contains("active");
+  list.classList.remove('active');
+  answer.style.display = 'none';
+  plusIcon.style.display = 'block';
+  minusIcon.style.display = 'none';
+}
 
-        // Tutup semua
-        lists.forEach((item) => {
-            item.classList.remove("active");
-            item.querySelector("p").style.display = "none";
-            item.querySelector(".plus").style.display = "block";
-            item.querySelector(".minus").style.display = "none";
-        });
+allLists.forEach((list, i) => {
+  const question = list.querySelector('.question');
+  question.setAttribute('tabindex', '0');
 
-        // Jika tadi belum aktif, buka dia
-        if (!isActive) {
-            list.classList.add("active");
-            answer.style.display = "block";
-            plusIcon.style.display = "none";
-            minusIcon.style.display = "block";
-        }
-    };
+  question.addEventListener('click', () => {
+    const isActive = list.classList.contains('active');
+    if (!isActive) {
+      openList(list);
+    } else {
+      closeList(list);
+    }
+  });
 
-    toggleButton.addEventListener("click", toggle);
+  question.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = allLists[i + 1];
+      if (next) next.querySelector('.question').focus();
+    }
 
-    // Tambahkan akses keyboard
-    list.querySelector(".question").addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            toggle();
-        }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = allLists[i - 1];
+      if (prev) prev.querySelector('.question').focus();
+    }
 
-        // Navigasi kiri/kanan pakai arrow keys
-        if (e.key === "ArrowDown" && index < lists.length - 1) {
-            lists[index + 1].querySelector(".question").focus();
-        }
-        if (e.key === "ArrowUp" && index > 0) {
-            lists[index - 1].querySelector(".question").focus();
-        }
-    });
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      openList(list);
+    }
+
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      closeList(list);
+    }
+  });
 });
+
+openList(allLists[0]);
