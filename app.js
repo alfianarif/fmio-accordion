@@ -1,57 +1,54 @@
 const lists = document.querySelectorAll(".list");
 
-// Biar semua pertanyaan bisa difokus dan di-navigate
-lists.forEach((list) => {
-    const question = list.querySelector(".question");
-    question.setAttribute("tabindex", "0");
+// Buka pertanyaan pertama saat halaman dibuka
+if (lists.length > 0) {
+    lists[0].classList.add("active");
+    lists[0].querySelector("p").style.display = "block";
+    lists[0].querySelector(".plus").style.display = "none";
+    lists[0].querySelector(".minus").style.display = "block";
+}
 
-    // Klik toggle
-    const viewhide = list.querySelector(".viewhide");
-    viewhide.addEventListener("click", () => {
+lists.forEach((list, index) => {
+    const toggleButton = list.querySelector(".viewhide");
+    const answer = list.querySelector("p");
+    const plusIcon = list.querySelector(".plus");
+    const minusIcon = list.querySelector(".minus");
+
+    const toggle = () => {
         const isActive = list.classList.contains("active");
 
         // Tutup semua
-        lists.forEach((l) => l.classList.remove("active"));
+        lists.forEach((item) => {
+            item.classList.remove("active");
+            item.querySelector("p").style.display = "none";
+            item.querySelector(".plus").style.display = "block";
+            item.querySelector(".minus").style.display = "none";
+        });
 
-        // Kalau sebelumnya gak aktif, buka yang ini
+        // Jika tadi belum aktif, buka dia
         if (!isActive) {
             list.classList.add("active");
+            answer.style.display = "block";
+            plusIcon.style.display = "none";
+            minusIcon.style.display = "block";
         }
-    });
+    };
 
-    // Fokus otomatis buka, dan tutup yang lain
-    question.addEventListener("focus", () => {
-        lists.forEach((l) => l.classList.remove("active"));
-        list.classList.add("active");
-    });
+    toggleButton.addEventListener("click", toggle);
 
-    // Keyboard navigation
-    question.addEventListener("keydown", (e) => {
-        const index = [...lists].indexOf(list);
+    // Tambahkan akses keyboard
+    list.querySelector(".question").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+        }
 
-        switch (e.key) {
-            case "ArrowDown":
-                e.preventDefault();
-                if (index < lists.length - 1) {
-                    const next = lists[index + 1].querySelector(".question");
-                    next.focus();
-                }
-                break;
-            case "ArrowUp":
-                e.preventDefault();
-                if (index > 0) {
-                    const prev = lists[index - 1].querySelector(".question");
-                    prev.focus();
-                }
-                break;
-            case "ArrowLeft":
-                e.preventDefault();
-                lists[0].querySelector(".question").focus();
-                break;
-            case "ArrowRight":
-                e.preventDefault();
-                lists[lists.length - 1].querySelector(".question").focus();
-                break;
+        // Navigasi kiri/kanan pakai arrow keys
+        if (e.key === "ArrowDown" && index < lists.length - 1) {
+            lists[index + 1].querySelector(".question").focus();
+        }
+        if (e.key === "ArrowUp" && index > 0) {
+            lists[index - 1].querySelector(".question").focus();
         }
     });
 });
